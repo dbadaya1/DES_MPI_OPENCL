@@ -7,7 +7,7 @@
 using namespace std;
 
 
-void generateSubKeys(int subKeys[17][48], bool forEncryption) {
+void generateSubKeys(int subKeys[17][48],bool forEncryption) {
 
 	const int key[] = {
 		0,0,0,1,0,0,1,1,
@@ -118,7 +118,7 @@ void E(int input[32], int output[48]) {
 
 }
 
-void xor(int A[], int B[], int n, int output[]) {
+void xor(int A[], int B[],int n, int output[]) {
 	for (int i = 0; i < n; i++) {
 		output[i] = A[i] ^ B[i];
 	}
@@ -181,7 +181,7 @@ void F(int R[32], int K[48], int output[32]) {
 	int temp[48];
 	E(R, temp);
 
-	xor (K, temp, 48, temp);
+	xor(K, temp,48, temp);
 
 	int temp1[32];
 	for (int box = 0, inputIndex = 0, outputIndex = 0; box < 8; box++) {
@@ -217,7 +217,7 @@ void F(int R[32], int K[48], int output[32]) {
 		output[i] = temp1[P[i] - 1];
 	}
 }
-void finalPermutation(int LR[64], int output[64]) {
+void finalPermutation(int LR[64],int output[64]) {
 	const int PC[] = {
 		40,8,48,16,56,24,64,32,
 		39,7,47,15,55,23,63,31,
@@ -234,18 +234,18 @@ void finalPermutation(int LR[64], int output[64]) {
 	}
 }
 
-string execute(char text[8], int subKeys[17][48]) {
-
+string execute(char text[8],int subKeys[17][48]) {
+	
 	int binary[64];
-
-	for (int i = 0, k = 0; i < 8; i++) {
+	
+	for (int i = 0,k = 0; i < 8; i++) {
 		std::bitset<8> x(text[i]);
 		for (int j = 0; j < 8; j++) {
 			binary[k++] = x[7 - j] ? 1 : 0;
 		}
 	}
 	int IP[64];
-	initialPermutation(binary, IP);
+	initialPermutation(binary,IP);
 
 
 	int L[17][32];
@@ -264,7 +264,7 @@ string execute(char text[8], int subKeys[17][48]) {
 			L[round][i] = R[round - 1][i];
 		}
 		F(R[round - 1], subKeys[round], temp);
-		xor (L[round - 1], temp, 32, R[round]);
+		xor(L[round - 1], temp,32, R[round]);
 	}
 	int RL[64];
 	for (int i = 0; i < 32; i++) {
@@ -278,24 +278,24 @@ string execute(char text[8], int subKeys[17][48]) {
 
 	string cipher;
 
-	for (int i = 0, k = 0; i < 8; i++) {
+	for (int i = 0,k = 0; i < 8; i++) {
 		int sum = 0;
 		for (int j = 0; j < 8; j++) {
 			sum += output[k++] * pow(2, 7 - j);
 		}
 		cipher.push_back((char)sum);
 	}
-
+	
 
 	return cipher;
 }
 
 string encrypt(char plaintext[8], int subKeys[17][48]) {
-	return execute(plaintext, subKeys);
+	return execute(plaintext,subKeys);
 }
 
 string decrypt(char cipher[8], int subKeys[17][48]) {
-	return execute(cipher, subKeys);
+	return execute(cipher,subKeys);
 }
 
 
