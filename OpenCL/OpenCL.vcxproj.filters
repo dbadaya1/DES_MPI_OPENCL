@@ -23,13 +23,18 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="pie.cl">
+    <ClInclude Include="DES.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="des.cl">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="DES.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
+    <Text Include="a.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
   </ItemGroup>
 </Project>

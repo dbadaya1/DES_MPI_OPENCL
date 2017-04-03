@@ -6,7 +6,7 @@
 
 using namespace std;
 
-string ECB(bool encryption,string input) {
+void ECB(bool encryption,string input) {
 	int rank, size;
 	MPI_Init(nullptr, nullptr);
 	MPI_Comm_rank(MPI_COMM_WORLD, &rank);
@@ -18,7 +18,7 @@ string ECB(bool encryption,string input) {
 	int subKeys[17][48];
 	if (rank == 0) {
 		FILE* fp;
-		fopen_s(&fp, input.c_str(), "r");
+		fopen_s(&fp, input.c_str(), "rb");
 		int n;
 		fseek(fp, 0, SEEK_END);
 		n = ftell(fp);
@@ -28,46 +28,54 @@ string ECB(bool encryption,string input) {
 			length = n + 8 - rem;
 			text = new char[length];
 			for (int i = n; i < length; i++) {
-				text[i] = ' ';
+				text[i] = 0;
 			}
 		}
 		else {
 			length = n;
 			text = new char[length];
 		}
-		fread(text, n, 1, fp);
+		fread(text, sizeof(char),n, fp);
+		fclose(fp);
 		cipher = new char[length];
 		generateSubKeys(subKeys, encryption);
-
 	}
 	char textBlock[8];
 	MPI_Scatter(text, 8, MPI_CHAR, textBlock, 8, MPI_CHAR, 0, MPI_COMM_WORLD);
 
 	MPI_Bcast(subKeys, 17 * 48, MPI_INT, 0, MPI_COMM_WORLD);
 
-	string result;
-	result = encryption ?  encrypt(textBlock, subKeys) : decrypt(textBlock, subKeys);
-	MPI_Gather(result.c_str(), 8, MPI_CHAR, cipher, 8, MPI_CHAR, 0, MPI_COMM_WORLD);
+	char result[8];
+	if (encryption) {
+		encrypt(textBlock, subKeys,result);
+	}
+	else {
+		decrypt(textBlock, subKeys,result);
+	}
+	MPI_Gather(result, 8, MPI_CHAR, cipher, 8, MPI_CHAR, 0, MPI_COMM_WORLD);
 
 	if (rank == 0) {
+		if (!encryption) {
+			while (cipher[length - 1] == 0) {
+				length--;
+			}
+		}
 		string filename;
 		string extension = input.substr(input.find_last_of('.'));
 		if (encryption) {
-			filename = "encryption_result" + extension;
+			filename = "files/encryption_result" + extension;
 		}
 		else {
-			filename = "decryption_result" + extension;
+			filename = "files/decryption_result" + extension;
 		}
 		FILE* fp;
-		fopen_s(&fp, filename.c_str(), "w");
-		fwrite(cipher, length, 1, fp);
+		fopen_s(&fp, filename.c_str(), "wb");
+		fwrite(cipher,sizeof(char), length, fp);
+		fclose(fp);
 
 	}
 
 	MPI_Finalize();
-
-	return string(cipher,length);
-
 }
 
 

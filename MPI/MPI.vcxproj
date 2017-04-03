@@ -25,9 +25,6 @@
   <ItemGroup>
     <ClInclude Include="DES.h" />
   </ItemGroup>
-  <ItemGroup>
-    <Text Include="plaintext.txt" />
-  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{7D393E6C-1A1A-41BC-AA30-B4523C70A897}</ProjectGuid>
