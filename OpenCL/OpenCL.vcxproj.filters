@@ -28,13 +28,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="des.cl">
-      <Filter>Resource Files</Filter>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="a.txt">
-      <Filter>Resource Files</Filter>
-    </Text>
+    <Text Include="des.cl" />
   </ItemGroup>
 </Project>

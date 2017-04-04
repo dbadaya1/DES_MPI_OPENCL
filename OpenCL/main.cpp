@@ -11,7 +11,6 @@
 using namespace std;
 
 
-const int IV[64] = { 1 };
 
 
 int main(int argc, char *argv[]) {
@@ -22,10 +21,10 @@ int main(int argc, char *argv[]) {
 	//string type = "d";
 	//string inputFile = "encryption_result.txt";
 	
-	char *input, *result;
+	char *input;
 	int length;
 	FILE* fp;
-	fopen_s(&fp, inputFile.c_str(), "r");
+	fopen_s(&fp, inputFile.c_str(), "rb");
 	fseek(fp, 0, SEEK_END);
 	int n = ftell(fp);
 	fseek(fp, 0, SEEK_SET);
@@ -41,10 +40,8 @@ int main(int argc, char *argv[]) {
 		length = n;
 		input = new char[length];
 	}
-	fread(input, n, 1, fp);
+	fread(input, sizeof(char),n, fp);
 	fclose(fp);
-	result = new char[length];
-
 
 	int subKeys[17][48];
 	if (type == "e") {
@@ -147,11 +144,12 @@ int main(int argc, char *argv[]) {
 
 	ret = clEnqueueReadBuffer(command_queue, outputMemObject, CL_TRUE, 0, length * sizeof(char), output, 0, NULL, NULL);
 
-	if (type != "e") {
-		while (output[length - 1] == 0) {
-			length--;
+
+		for (int i = 0; i < 7; i++) {
+			if (output[length - 1] == 0) {
+				length--;
+			}
 		}
-	}
 
 	string filename;
 	string extension = inputFile.substr(inputFile.find_last_of('.'));
@@ -162,8 +160,8 @@ int main(int argc, char *argv[]) {
 		filename = "files/decryption_result" + extension;
 	}
 	fp;
-	fopen_s(&fp, filename.c_str(), "w");
-	fwrite(output, length, 1, fp);
+	fopen_s(&fp, filename.c_str(), "wb");
+	fwrite(output, sizeof(char),length, fp);
 	fclose(fp);
 
 
